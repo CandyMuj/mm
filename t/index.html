@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Punch the clock</title>
+    <script src="../plugin/jquery-3.3.1.min.js"></script>
+
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        .bodydiv {
+            margin-top:10%;
+        }
+
+        select {
+            width: auto;
+            height: 33px;
+            padding: 0 1%;
+            margin: 0;
+            letter-spacing: 8px;
+            font-size: 18px;
+        }
+
+        option {
+            text-align: center;
+        }
+
+        button {
+            padding: 1px 0px 1px 9px;
+            letter-spacing: 6px;
+            width: 102px;
+            height: 36px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bodydiv">
+        <div>
+            <select id="chooseAddress">
+                <option value="tt" selected>铁塔</option>
+                <option value="lt">联通</option>
+            </select>
+        </div>
+        <br /><br /><br />
+        <div>
+            <button data-type="%E7%AD%BE%E5%88%B0">签到</button>&emsp;&emsp;
+            <button data-type="%E7%AD%BE%E9%80%80">签退</button>
+        </div>
+    </div>
+</body>
+
+<script lang="javascript">
+    $(function () {
+        // 参数设置
+        var randomLength = 5;  // 生成随机数长度
+
+        // 铁塔链接
+        var tt_url = "http://221.214.76.98:8070/urms/plugins/check/tcheckattendance/create.ilf?userName=%E4%BB%BB%E7%A5%9D%E4%BD%B3&userId=11080&address=%E5%9B%9B%E5%B7%9D%E7%9C%81%E6%88%90%E9%83%BD%E5%B8%82%E6%AD%A6%E4%BE%AF%E5%8C%BA%E6%A1%82%E6%BA%AA%E8%A1%97%E9%81%93%E9%95%BF%E8%99%B9%E7%A7%91%E6%8A%80%E5%A4%A7%E5%8E%A6C%E5%BA%A7";
+
+        // 联通链接
+        var lt_url = "http://221.214.76.98:8070/urms/plugins/check/tcheckattendance/create.ilf?userName=%E4%BB%BB%E7%A5%9D%E4%BD%B3&userId=11080&address=%E6%88%90%E9%83%BD%E5%B8%82%E5%A4%A9%E5%BA%9C%E5%A4%A7%E9%81%93%E5%8C%97%E6%AE%B516%E5%8F%B7%E9%AB%98%E6%96%B0%E5%9B%BD%E9%99%85%E5%B9%BF%E5%9C%BAC%E5%BA%A7";
+
+        $('button').click(function () {
+            var address = $('#chooseAddress option:checked').val();
+            var type = $(this).attr('data-type');
+
+            var numm = randomNum();
+            console.info(address + " == " + type + " == " + numm);
+
+            var url;  // 最终拼接的链接
+            var latitude;
+            var longitude;
+            if (address == 'tt') {
+                latitude = '90.5' + numm;
+                longitude = '104.0' + numm;
+                url = tt_url;
+            } else {
+                latitude = '30.5' + numm;
+                longitude = '104.0' + numm;
+                url = lt_url;
+            }
+            url += '&attendanceType=' + type + '&latitude=' + latitude + '&longitude=' + longitude;
+            console.info(url);
+            to_ajax(url);
+        })
+
+        function randomNum() {
+            var randd = String(Math.round(Math.random() * Math.pow(10, randomLength)));
+            // console.info(randd)
+            if (randd.length < randomLength) {
+                var str_ = '0';
+                var str = '';
+                for (i = 0; i < (randomLength - randd.length); i++) {
+                    str += str_;
+                }
+                randd = str + randd;
+            }
+            return randd;
+        }
+
+        function to_ajax(url) {
+            self.location.href = url;
+            // $.ajax({
+            //     url: url,
+            //     type: 'POST',
+            //     async: true,
+            //     dataType: 'jsonp',
+            //     jsonp: 'callback',
+            //     crossDomain: true,
+            //     success: function (res) {
+            //         // console.info(res);
+            //         // res = eval('('+res+')');
+            //         // alert(res.success + " - > " + res.message);
+            //     },
+            //     error: function (err, a, b, c, d) {
+            //         // alert("失败错误: " + err);
+            //         console.info(err);
+            //         console.info(a);
+            //         console.info(b);
+            //         console.info(c);
+            //         console.info(d);
+            //     }
+            // })
+        }
+    })
+</script>
+
+</html>

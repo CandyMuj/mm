@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>请长按扫描二维码</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            -webkit-touch-callout: none;
+        }
+
+        #qrcode-div {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+<div id="body-div">
+    <div id="qrcode-div">
+        <div id="qrcode" style="display: none"></div>
+        <img class="qrcode" src="" alt="长按扫描">
+    </div>
+</div>
+</body>
+<script src="../plugin/jquery-3.3.1.min.js"></script>
+<script src="../plugin/CryptoJS/aes.js"></script>
+<script src="../plugin/qrcode.min.js"></script>
+<script>
+    $(function () {
+        let data = {
+            qq: "https://i.qianbao.qq.com/wallet/sqrcode.htm?m=tenpay&f=wallet&a=1&ac=CAEQoPC-7gQYhsLYkwY%3D_xxx_sign&u=1305458720&n=CandyMuj",
+            wx: "wxp://f2f08GAEQmtSrxQrEYoZWP_buTYE0PZAjEsUWhddmRBmhjg",
+            ali: "https://qr.alipay.com/fkx119848wv4lgfzdud3uf2"
+        }
+
+        // let data = getUrlParam("d")
+        // if (!data || typeof data === "number") {
+        //     $("#body-div").text("无数据")
+        // }
+
+        // let json = JSON.parse(decrypt(data))
+
+
+        // 支付宝
+        if (navigator.userAgent.match(/Alipay/i)) {
+            window.location.href = data.ali;
+        }
+        // 微信
+        else if (navigator.userAgent.match(/MicroMessenger\//i)) {
+            qrCode(data.wx);
+        }
+        // QQ
+        else if (navigator.userAgent.match(/QQ\//i)) {
+            qrCode(data.qq);
+        } else {
+            $("#qrcode-div").html("暂不支持");
+        }
+
+        $("#qrcode-div").show();
+    })
+
+
+    /**
+     * 生成二维码
+     */
+    function qrCode(data) {
+        new QRCode("qrcode", {
+            text: data,
+            render: "canvas",
+            width: 128 * 3,
+            height: 128 * 3,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        let canvas = $("canvas")[0];
+        $('.qrcode').attr('src', canvas.toDataURL('image/jpg'))
+    }
+
+    /**
+     * 加密
+     */
+    function encrypt(data) {
+        let aesKey = "123"
+        let key = CryptoJS.enc.Utf8.parse(aesKey)
+
+        let encrypt = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(data), key, {
+            iv: CryptoJS.enc.Utf8.parse("ABCDEF1234123412"),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        })
+        return encrypt.toString();
+    }
+
+    /**
+     * 解密
+     */
+    function decrypt(data) {
+        let aesKey = "123"
+        let key = CryptoJS.enc.Utf8.parse(aesKey)
+
+        let decrypt = CryptoJS.AES.decrypt(CryptoJS.enc.Utf8.parse(data), key, {
+            iv: CryptoJS.enc.Utf8.parse("ABCDEF1234123412"),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        })
+        return decrypt.toString(CryptoJS.enc.Utf8)
+    }
+
+    /**
+     * 获取url中的参数
+     */
+    function getUrlParam(name) {
+        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        let r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+</script>
+</html>

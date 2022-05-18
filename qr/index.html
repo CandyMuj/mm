@@ -64,10 +64,10 @@
         else if (navigator.userAgent.match(/QQ\//i)) {
             qrCode(data.qq);
         } else {
-            $("#qrcode-div").html("暂不支持");
+            $("#qrcode").html("暂不支持");
+            $(".qrcode").attr('src', "https://s1.ax1x.com/2022/05/18/OomD0S.png");
+            $("#qrcode-div").show();
         }
-
-        $("#qrcode-div").show();
     })
 
 
@@ -87,6 +87,7 @@
 
         let canvas = $("canvas")[0];
         $('.qrcode').attr('src', canvas.toDataURL('image/jpg'))
+        $("#qrcode-div").show();
     }
 
     /**
